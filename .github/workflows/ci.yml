@@ -2,10 +2,11 @@ name: CI
 
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
   schedule:
-    - cron: "0 5 * * *"  # daily at 05:00 UTC (~08:00 Athens)
+    - cron: "0 5 * * *" # daily @ 05:00 UTC (~08:00 Athens)
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -24,32 +25,31 @@ jobs:
       - name: Install build deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y clang cppcheck
+          sudo apt-get install -y clang
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
-          cache: "pip"
+          cache: pip
+          cache-dependency-path: requirements.txt
 
       - name: Install Python deps
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pyyaml
+          pip install -r requirements.txt
 
       - name: Build
         run: |
           mkdir -p build artifacts
           clang -Wall -Wextra -O2 src/thermal_control.c -o build/tcs
 
-      - name: Generate Test Matrix (optional but recommended)
+      - name: Generate Test Matrix (optional)
         run: |
-          python3 tools/gen_matrix.py || true
-          # don't fail if the plan markers are missing locally
+          if [ -f tools/gen_matrix.py ]; then python3 tools/gen_matrix.py || true; fi
 
       - name: Run tests (pytest)
         run: |
-          mkdir -p artifacts
           pytest -q --junitxml=artifacts/junit.xml
 
       - name: Upload artifacts
@@ -58,14 +58,17 @@ jobs:
           name: test-artifacts
           path: artifacts/
 
-  # --- Optional: static analysis (cppcheck) ---
   cppcheck:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - run: |
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install cppcheck
+        run: |
           sudo apt-get update
           sudo apt-get install -y cppcheck
+      - name: Run cppcheck
+        run: |
           cppcheck --enable=warning,style,performance,portability \
                    --error-exitcode=1 \
                    --inline-suppr \
