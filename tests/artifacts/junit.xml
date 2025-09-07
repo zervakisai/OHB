@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="1" failures="0" skipped="0" tests="1" time="0.079" timestamp="2025-09-07T15:33:52.587127" hostname="Konstantinoss-MacBook-Air-2.local"><testcase classname="" name="test_tcs_cli" time="0.000"><error message="collection failure">test_tcs_cli.py:59: in &lt;module&gt;
+    CASES = load_cases()
+test_tcs_cli.py:55: in load_cases
+    data = yaml.safe_load(CASES_YAML.read_text(encoding="utf-8"))
+/opt/anaconda3/lib/python3.12/pathlib.py:1027: in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+/opt/anaconda3/lib/python3.12/pathlib.py:1013: in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+E   FileNotFoundError: [Errno 2] No such file or directory: 'docs/cases.yaml'</error></testcase></testsuite></testsuites>

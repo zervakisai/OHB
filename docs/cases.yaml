@@ -1,0 +1,165 @@
+cases:
+  # --- Band / boundaries / control ---
+  - id: TCS-004
+    purpose: "Edge 0 (prev=1)"
+    input:
+      temp: 0
+      prev: 1
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 1
+
+  - id: TCS-006
+    purpose: "Edge 40 (prev=0)"
+    input:
+      temp: 40
+      prev: 0
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 0
+
+  - id: TCS-002
+    purpose: "Edge -15 (not safety; below-0 control)"
+    input:
+      temp: -15
+      prev: 0
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 1
+
+  - id: TCS-008
+    purpose: "Edge 45 (not safety; above-40 control)"
+    input:
+      temp: 45
+      prev: 1
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 0
+
+  - id: TCS-003
+    purpose: "Below 0"
+    input:
+      temp: -0.1
+      prev: 0
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 1
+
+  - id: TCS-007
+    purpose: "Above 40"
+    input:
+      temp: 40.1
+      prev: 1
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 0
+
+  - id: TCS-005
+    purpose: "Mid band"
+    input:
+      temp: 20
+      prev: 0
+      dt: 1
+    expected:
+      status: "OK"
+      heater: 0
+
+  # --- Safety regions ---
+  - id: TCS-001
+    purpose: "Safety low"
+    input:
+      temp: -16
+      prev: 0
+      dt: 1
+    expected:
+      status: "SAFETY_MODE"
+      heater: null
+
+  - id: TCS-009
+    purpose: "Safety high"
+    input:
+      temp: 45.1
+      prev: 1
+      dt: 1
+    expected:
+      status: "SAFETY_MODE"
+      heater: null
+
+  # --- Invalids (policy) ---
+  - id: TCS-010
+    purpose: "Invalid dt=0"
+    input:
+      temp: 10
+      prev: 0
+      dt: 0
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
+  - id: TCS-011
+    purpose: "Invalid dt<0"
+    input:
+      temp: 10
+      prev: 0
+      dt: -1
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
+  - id: TCS-012
+    purpose: "Invalid sensor (special)"
+    input:
+      temp: 999
+      prev: 0
+      dt: 1
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
+  - id: TCS-013
+    purpose: "Non-finite temperature (NaN)"
+    input:
+      temp: "NaN"
+      prev: 1
+      dt: 1
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
+  - id: TCS-014
+    purpose: "Non-finite dt (NaN)"
+    input:
+      temp: 10
+      prev: 1
+      dt: "NaN"
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
+  # --- Precedence checks ---
+  - id: TCS-015
+    purpose: "Precedence: invalid vs safety (low)"
+    input:
+      temp: -20
+      prev: 0
+      dt: 0
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
+  - id: TCS-016
+    purpose: "Precedence: NaN + dt=0"
+    input:
+      temp: "NaN"
+      prev: 0
+      dt: 0
+    expected:
+      status: "INVALID_INPUT"
+      heater: null
+
