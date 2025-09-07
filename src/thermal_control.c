@@ -42,7 +42,8 @@ int control_heater(float current_temp, int prev_state, float dt) {
     return prev_state;
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
+
     if (argc != 4) {
         printf("Usage: %s <current_temp> <prev_state> <dt>\n", argv[0]);
         return 1;
